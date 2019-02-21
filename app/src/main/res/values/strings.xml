@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Frank Study Fourth</string>
+    <string name="remember_my_selection">Remember my selection</string>
+    <string name="internet_error_retry">Looks like lost your internet connection. Please check your settings and try
+        again.[Click to retry]
+    </string>
+    <string name="network_lose_retry">No internet, please check your network settings, and try again.[Click to retry]
+    </string>
+</resources>

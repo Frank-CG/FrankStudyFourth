@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SettingDialog" android:layout_gravity="center">
+
+    <!--<TextView-->
+            <!--android:text="Audio"-->
+            <!--android:id="@+id/streamPickerAudio"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--android:layout_marginStart="8dp" app:layout_constraintHorizontal_bias="0.5"-->
+            <!--app:layout_constraintEnd_toStartOf="@+id/streamPickerVideo"-->
+            <!--android:gravity="center"-->
+            <!--android:textColor="@color/white" android:layout_marginTop="16dp" app:layout_constraintTop_toTopOf="parent"-->
+            <!--android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"-->
+            <!--android:layout_marginLeft="16dp"/>-->
+
+    <!--<TextView-->
+            <!--android:text="Video"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content" android:layout_marginRight="16dp"-->
+            <!--android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"-->
+            <!--android:id="@+id/streamPickerVideo"-->
+            <!--app:layout_constraintStart_toEndOf="@+id/streamPickerAudio" app:layout_constraintHorizontal_bias="0.5"-->
+            <!--android:gravity="center" android:textColor="@color/white" android:layout_marginTop="16dp"-->
+            <!--app:layout_constraintTop_toTopOf="parent" android:fontFamily="sans-serif"-->
+            <!--android:textStyle="bold" android:textSize="18sp"/>-->
+
+    <!--<Button-->
+            <!--android:text="Audio"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="16dp"-->
+            <!--android:layout_marginStart="16dp" android:id="@+id/buttonAudio"-->
+            <!--app:layout_constraintEnd_toStartOf="@+id/buttonVideo"-->
+            <!--app:layout_constraintHorizontal_bias="0.5" app:layout_constraintBaseline_toBaselineOf="@+id/buttonVideo"/>-->
+    <!--<Button-->
+            <!--android:text="Video"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginRight="16dp"-->
+            <!--android:layout_marginEnd="16dp"-->
+            <!--app:layout_constraintEnd_toEndOf="parent" android:id="@+id/buttonVideo"-->
+            <!--app:layout_constraintStart_toEndOf="@+id/buttonAudio" app:layout_constraintHorizontal_bias="0.5"-->
+            <!--app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp"/>-->
+
+    <LinearLayout
+            android:id="@+id/streamPickerLayout"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toTopOf="parent">
+        <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/streamPicker" android:text="Audio"
+                android:textColor="@color/colorPrimary" android:fontFamily="sans-serif" android:textStyle="bold"
+                android:textSize="18sp"
+                android:checked="true"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:text="Video"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary" android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"
+        />
+    </LinearLayout>
+
+    <!--<View-->
+            <!--android:id="@+id/divider"-->
+            <!--android:layout_width="395dp"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:background="?android:attr/listDivider"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent"-->
+            <!--android:layout_marginTop="65dp"-->
+    <!--/>-->
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/audioStreamsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toBottomOf="@+id/streamPickerLayout"
+            app:layout_constraintLeft_toLeftOf="parent" app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="16dp" android:layout_marginRight="16dp">
+        <TextView
+                android:text="English Audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/asen" android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp" android:gravity="left" android:textColor="@color/colorPrimary"
+                android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"/>
+        <TextView
+                android:text="French Audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/asfr" android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp" android:gravity="left" android:textColor="@color/colorPrimary"
+                android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"/>
+        <TextView
+                android:text="Floor Audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/asfl" android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp" android:gravity="left" android:textColor="@color/colorPrimary"
+                android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"/>
+
+        <CheckBox
+                android:text="@string/remember_my_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBox1" android:layout_marginTop="16dp"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"
+                android:layout_marginLeft="16dp" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp" android:checked="true"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/videoStreamsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/streamPickerLayout"
+            app:layout_constraintLeft_toLeftOf="parent" app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="16dp" android:layout_marginRight="16dp">
+        <TextView
+                android:text="English Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/vsen"
+                android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:gravity="left"
+                android:textColor="@color/colorPrimary" android:fontFamily="sans-serif" android:textStyle="bold"
+                android:textSize="18sp"/>
+        <TextView
+                android:text="French Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/vsfr"
+                android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:gravity="left"
+                android:textColor="@color/colorPrimary" android:fontFamily="sans-serif" android:textStyle="bold"
+                android:textSize="18sp"/>
+        <TextView
+                android:text="Floor Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/vsfl"
+                android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:gravity="left"
+                android:textColor="@color/colorPrimary" android:fontFamily="sans-serif" android:textStyle="bold"
+                android:textSize="18sp"/>
+        <CheckBox
+                android:text="@string/remember_my_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBox2" android:layout_marginTop="16dp"
+                android:textColor="@color/colorPrimary"
+                android:fontFamily="sans-serif" android:textStyle="bold" android:textSize="18sp"
+                android:layout_marginLeft="16dp" android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp" android:checked="true"/>
+    </LinearLayout>
+
+
+
+
+
+</android.support.constraint.ConstraintLayout>
