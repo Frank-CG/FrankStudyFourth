@@ -26,6 +26,12 @@ import android.R.string.cancel
 import android.content.Context
 import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
+import android.view.MotionEvent
+import android.text.method.Touch.onTouchEvent
+import android.R.attr.path
+import android.widget.Toast
+import com.example.frankstudyfourth.utils.MyVideoView
+import com.example.frankstudyfourth.utils.OnSwipeTouchListener
 
 
 class VideoActivity : AppCompatActivity() {
@@ -46,6 +52,13 @@ class VideoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_video)
 
         videoView = findViewById(R.id.video_View);
+
+//        var swipeTouchListener = OnSwipeTouchListener(this)
+//        videoView.setOnTouchListener(swipeTouchListener);
+
+
+
+
         meetingModel = intent.getParcelableExtra<MeetingModel>(EXTRA_MESSAGE)
         Log.d("VideoActivity","Meeting Id="+meetingModel.id)
 
@@ -61,6 +74,7 @@ class VideoActivity : AppCompatActivity() {
 
         AsyncGetURL(this).execute()
     }
+
 
     fun GetUrl(lang: String, audioOnly: String, meeting: MeetingModel): String {
         var rst = ""
@@ -83,6 +97,7 @@ class VideoActivity : AppCompatActivity() {
             val mediaController = CcMediaController(this@VideoActivity)
             mediaController.setAnchorView(videoView)
 
+//            videourl = "https://parlvulive.azureedge.net/HOC230-DUO-5/WB_Chamber/VL/EN/Playlist.m3u8?DVR"
             val video = Uri.parse(videourl)
             videoView?.setMediaController(mediaController)
             videoView?.setVideoURI(video)
