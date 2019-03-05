@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+	<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	             android:id="@+id/root"
+	             android:focusable="true"
+	             android:layout_width="match_parent"
+	             android:layout_height="300dp"
+	             android:keepScreenOn="true"
+	             app:layout_constraintStart_toStartOf="parent"
+	             app:layout_constraintTop_toTopOf="parent"
+	             app:layout_constraintEnd_toStartOf="@id/meetingInfo"
+	>
+
+		<com.google.android.exoplayer2.ui.PlayerView
+				android:id="@+id/player_view"
+				android:focusable="true"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+		>
+
+			<ProgressBar
+					android:id="@+id/progress_bar"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:visibility="gone"/>
+
+
+		</com.google.android.exoplayer2.ui.PlayerView>
+
+
+	</FrameLayout>
+
+	<TextView
+			android:text="@string/audio_only"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/audioOnly" android:gravity="center"
+			android:layout_gravity="center" android:visibility="invisible" android:textSize="48sp"
+			android:textColor="@color/colorWhite" android:textStyle="bold"
+			android:background="@android:color/transparent"
+			app:layout_constraintTop_toTopOf="@+id/root"
+			app:layout_constraintBottom_toBottomOf="@id/root"
+			app:layout_constraintStart_toStartOf="@id/root"
+			app:layout_constraintEnd_toEndOf="@id/root"
+	/>
+
+
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	             android:layout_width="match_parent"
+	             android:layout_height="wrap_content"
+	             android:id="@+id/meetingInfo"
+	             app:layout_constraintTop_toBottomOf="@+id/root"
+	             app:layout_constraintEnd_toEndOf="parent"
+	             android:layout_marginTop="16dp"
+	>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:layout_marginBottom="8dp">
+			<TextView android:text="@string/info_title"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingTitle"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_location"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingLocation"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_description"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingDescription"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_scheduled"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingScheduled"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_actual"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingActual"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+	</TableLayout>
+
+
+</android.support.constraint.ConstraintLayout>

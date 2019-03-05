@@ -3,6 +3,7 @@
           package="com.example.frankstudyfourth">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -31,6 +32,21 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".MainActivity"/>
         </activity>
+
+        <activity android:name=".VideoPlayerActivity"
+                  android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="com.google.android.exoplayer.demo.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:scheme="content"/>
+                <data android:scheme="asset"/>
+                <data android:scheme="file"/>
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>

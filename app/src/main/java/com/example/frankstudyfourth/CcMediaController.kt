@@ -62,9 +62,6 @@ class CcMediaController(private var activity: VideoActivity) : MediaController(a
         var dialog = SettingDialog()
         dialog.meetingModel = activity.meetingModel
         dialog.activity = activity
-
-
-
         return dialog
     }
 //

@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static android.support.v4.content.ContextCompat.getSystemService;
 
 public class ApiService {
 
@@ -121,6 +122,21 @@ public class ApiService {
     public static boolean isNetworkAvailable(Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
+    public static boolean checkWifiOnAndConnected(Context context) {
+        WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+
+        if (wifiMgr.isWifiEnabled()) { // Wi-Fi adapter is ON
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+            if( wifiInfo.getNetworkId() == -1 ){
+                return false; // Not connected to an access point
+            }
+            return true; // Connected to an access point
+        }
+        else {
+            return false; // Wi-Fi adapter is OFF
+        }
     }
 
     public static boolean isInternetAvailable(){

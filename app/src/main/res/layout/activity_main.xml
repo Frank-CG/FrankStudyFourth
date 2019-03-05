@@ -22,36 +22,36 @@
             <!--app:layout_constraintStart_toStartOf="parent"-->
             <!--app:layout_constraintTop_toBottomOf="@id/app_bar" android:layout_marginTop="16dp"/>-->
 
-    <TextView
-            android:text="@string/internet_error_retry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" android:id="@+id/internet_error_retry"
-            android:textColor="@color/material_blue_accent_400"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/app_bar"
-            android:layout_marginTop="16dp" android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" android:layout_marginRight="16dp" android:gravity="center"
-            android:onClick="networkRetry"
-            android:fontFamily="sans-serif"/>
+    <!--<TextView-->
+            <!--android:text="@string/internet_error_retry"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content" android:id="@+id/internet_error_retry"-->
+            <!--android:textColor="@color/material_blue_accent_400"-->
+            <!--android:visibility="gone"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/app_bar"-->
+            <!--android:layout_marginTop="16dp" android:layout_marginLeft="16dp" android:layout_marginStart="16dp"-->
+            <!--android:layout_marginEnd="16dp" android:layout_marginRight="16dp" android:gravity="center"-->
+            <!--android:onClick="networkRetry"-->
+            <!--android:fontFamily="sans-serif"/>-->
 
-    <TextView
-            android:text="@string/network_lose_retry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" android:id="@+id/network_lose_retry"
-            android:textColor="@color/material_blue_accent_400"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/internet_error_retry"
-            android:layout_marginTop="16dp" android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" android:layout_marginRight="16dp" android:gravity="center"
-            android:onClick="networkRetry"
-            android:fontFamily="sans-serif"/>
+    <!--<TextView-->
+            <!--android:text="@string/network_lose_retry"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content" android:id="@+id/network_lose_retry"-->
+            <!--android:textColor="@color/material_blue_accent_400"-->
+            <!--android:visibility="gone"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/internet_error_retry"-->
+            <!--android:layout_marginTop="16dp" android:layout_marginLeft="16dp" android:layout_marginStart="16dp"-->
+            <!--android:layout_marginEnd="16dp" android:layout_marginRight="16dp" android:gravity="center"-->
+            <!--android:onClick="networkRetry"-->
+            <!--android:fontFamily="sans-serif"/>-->
 
     <ProgressBar
-            android:id="@+id/MyprogressBar"
+            android:id="@+id/main_progressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,20 +63,33 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/app_bar"/>
 
-    <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+    <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/pullToRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorWhite"
-            android:padding="@dimen/padding"
-            android:clipToPadding="false"
-            tools:listitem="@layout/item_timeline"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintTop_toBottomOf="@+id/network_lose_retry" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/app_bar" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
-    </android.support.v7.widget.RecyclerView>
+            android:layout_marginTop="8dp"
+    >
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/colorWhite"
+                android:padding="@dimen/padding"
+                android:clipToPadding="false"
+                tools:listitem="@layout/item_timeline"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp" android:layout_marginRight="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
+        </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </android.support.constraint.ConstraintLayout>

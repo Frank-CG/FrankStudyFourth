@@ -56,9 +56,6 @@ class VideoActivity : AppCompatActivity() {
 //        var swipeTouchListener = OnSwipeTouchListener(this)
 //        videoView.setOnTouchListener(swipeTouchListener);
 
-
-
-
         meetingModel = intent.getParcelableExtra<MeetingModel>(EXTRA_MESSAGE)
         Log.d("VideoActivity","Meeting Id="+meetingModel.id)
 

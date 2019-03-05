@@ -1,26 +1,34 @@
 package com.example.frankstudyfourth
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.provider.AlarmClock.EXTRA_MESSAGE
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.frankstudyfourth.Protocols.ApiService
 import com.example.frankstudyfourth.model.MeetingModel
+import com.example.frankstudyfourth.model.MeetingStreamModel
 import com.example.frankstudyfourth.utils.DateTimeUtils
 import com.example.frankstudyfourth.utils.VectorDrawableUtils
 
 import com.github.vipulasri.timelineview.TimelineView
+import kotlinx.android.synthetic.main.activity_video_player.view.*
 
 import kotlinx.android.synthetic.main.item_timeline.view.*
+import java.util.*
 
 /**
  * Created by Vipul Asri on 13-12-2018.
  */
 
-class TimeLineAdapter(private val mFeedList: List<MeetingModel>) : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>() {
+class TimeLineAdapter(private val mFeedList: List<MeetingModel>,private val activity: AppCompatActivity) : RecyclerView.Adapter<TimeLineAdapter.TimeLineViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         return TimelineView.getTimeLineViewType(position, itemCount)
@@ -29,6 +37,10 @@ class TimeLineAdapter(private val mFeedList: List<MeetingModel>) : RecyclerView.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineViewHolder {
         val  layoutInflater = LayoutInflater.from(parent.context)
         return TimeLineViewHolder(layoutInflater.inflate(R.layout.item_timeline, parent, false), viewType)
+    }
+
+    fun getMeetingList(): List<MeetingModel>{
+        return mFeedList
     }
 
     override fun onBindViewHolder(holder: TimeLineViewHolder, position: Int) {
@@ -95,11 +107,50 @@ class TimeLineAdapter(private val mFeedList: List<MeetingModel>) : RecyclerView.
         holder.message.text = timeLineModel.title
         holder.card.setOnClickListener { v: View? ->
             Log.d("TimeLineClick",timeLineModel.title)
-            if(timeLineModel.entityStatus.toInt() != -999){
-                val intent = Intent(holder.timeline.context, VideoActivity::class.java).apply {
-                    putExtra(EXTRA_MESSAGE, timeLineModel)
+            if(ApiService.isNetworkAvailable(activity)){
+                if(ApiService.checkWifiOnAndConnected(activity)){
+                    if(timeLineModel.entityStatus.toInt() != -999){
+                        if(timeLineModel.streams.size > 0){
+                            var intent = Intent(holder.timeline.context, VideoPlayerActivity::class.java).apply {
+                                putExtra(EXTRA_MESSAGE, timeLineModel)
+                            }
+                            holder.timeline.context.startActivity(intent)
+                        }else{
+                            holder.progressbar.visibility = View.VISIBLE
+                        }
+                    }
+                }else{
+                    var builder = AlertDialog.Builder(activity)
+                    builder.apply {
+                        setPositiveButton(R.string.ok_continue,
+                            DialogInterface.OnClickListener { dialog, id ->
+                                dialog.dismiss()
+                                if(timeLineModel.entityStatus.toInt() != -999){
+                                    if(timeLineModel.streams.size > 0){
+                                        var intent = Intent(holder.timeline.context, VideoPlayerActivity::class.java).apply {
+                                            putExtra(EXTRA_MESSAGE, timeLineModel)
+                                        }
+                                        holder.timeline.context.startActivity(intent)
+                                    }else{
+                                        holder.progressbar.visibility = View.VISIBLE
+                                    }
+                                }
+                            })
+                        setNegativeButton(R.string.cancel,
+                            DialogInterface.OnClickListener { dialog, id ->
+                                dialog.dismiss()
+                            })
+                    }
+                    builder.setTitle("No WiFi Available")
+                    builder.setMessage("Currently using mobile network,continuing to play will consume traffic!")
+                    var dialog = builder.create()
+                    dialog.show()
                 }
-                holder.timeline.context.startActivity(intent)
+            }else{
+                var dialog = NotifyDialog()
+                dialog.title = "Network Error"
+                dialog.message = "No internet, please check your network settings, and try again."
+                dialog.show(activity.supportFragmentManager,"networkError")
             }
         }
     }
@@ -118,6 +169,7 @@ class TimeLineAdapter(private val mFeedList: List<MeetingModel>) : RecyclerView.
         var card = itemView.timeline_card
         var desc = card.text_timeline_desc
         var status = card.text_timeline_status
+        var progressbar = card.meeting_progressBar
 
         init {
             timeline.initLine(viewType)

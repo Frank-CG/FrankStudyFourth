@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Frank Study Fourth</string>
     <string name="remember_my_selection">Remember my selection</string>
     <string name="internet_error_retry">Looks like lost your internet connection. Please check your settings and try
@@ -6,4 +6,26 @@
     </string>
     <string name="network_lose_retry">No internet, please check your network settings, and try again.[Click to retry]
     </string>
+
+    <string name="exo_controls_previous_description">Previous track</string>
+    <string name="exo_controls_next_description">Next track</string>
+    <string name="exo_controls_pause_description">Pause</string>
+    <string name="exo_controls_play_description">Play</string>
+    <string name="exo_controls_stop_description">Stop</string>
+    <string name="exo_controls_rewind_description">Rewind</string>
+    <string name="exo_controls_fastforward_description">Fast forward</string>
+    <string name="video">Video</string>
+    <string name="radio_player">Radio Player</string>
+    <string name="video_player">Video Player</string>
+    <string name="caption">Caption</string>
+	<string name="audio_only">Audio Only</string>
+	<string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+	<string name="ok_continue">Continue</string>
+	<string name="info_title">Title</string>
+    <string name="info_location">Location</string>
+    <string name="info_description">Discription</string>
+    <string name="info_scheduled">Scheduled</string>
+    <string name="info_actual">Actual</string>
+
 </resources>
