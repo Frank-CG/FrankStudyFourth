@@ -30,18 +30,17 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
     private lateinit var picker: DatePickerDialog
     private lateinit var mAdapter: TimeLineAdapter
     private val mDataList = ArrayList<MeetingModel>()
+
     lateinit var mLayoutManager: LinearLayoutManager
     lateinit var mTitle: TextView
-//    lateinit var mInternetErrTv: TextView
-//    lateinit var mNetworkLoseTv: TextView
     lateinit var mProgressBar: ProgressBar
+    lateinit var showLanguage:String
 
     private lateinit var selectedDate: Calendar
 
-    var showlanguage:String = "en";
 
     private val mSwipeRefreshLayout: SwipeRefreshLayout by lazy {
-        findViewById(R.id.pullToRefresh) as SwipeRefreshLayout
+        findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,16 +50,14 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
         setSupportActionBar(app_bar as Toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false);
         mTitle = toolbar_title as TextView
-//        mInternetErrTv = internet_error_retry
-//        mNetworkLoseTv = network_lose_retry
         mProgressBar = main_progressBar
 
         selectedDate = Calendar.getInstance()
         mTitle.text = SimpleDateFormat("yyyy-MM-dd").format(selectedDate.time)
 
-        showlanguage = Locale.getDefault().isO3Language.substring(0,2)
-        if(showlanguage != "en" && showlanguage != "fr"){
-            showlanguage = "en"
+        showLanguage = Locale.getDefault().isO3Language.substring(0,2)
+        if(showLanguage != "en" && showLanguage != "fr"){
+            showLanguage = "en"
         }
 
         val cldr = Calendar.getInstance()
@@ -91,8 +88,6 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
                     startDate.set(Calendar.MONTH, monthOfYear)
                     startDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                     selectedDate = startDate
-                    var endDate = startDate.clone() as Calendar
-                    endDate.add(Calendar.DATE,1)
                     val formatter = SimpleDateFormat("yyyyMMdd")
 
                     var titleFormatter = SimpleDateFormat("yyyy-MM-dd")
@@ -100,7 +95,6 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
                     AsyncGetMeetingsList(this@MainActivity).execute(formatter.format(startDate.time),formatter.format(startDate.time))
                 }
             })
-
         picker.hide()
 
         if(ApiService.isNetworkAvailable(this)){
@@ -111,8 +105,6 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
             dialog.message = "No internet, please check your network settings, and try again."
             dialog.show(supportFragmentManager,"networkError")
         }
-
-        //initRecyclerView()
 
         println("Default Language:"+ Locale.getDefault().displayLanguage)
         println("Default Language:"+ Locale.getDefault().isO3Language)
@@ -131,9 +123,7 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.appbar_menu, menu)
-
         return true
     }
 
@@ -194,7 +184,7 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
 //            var jsonResult = JSONObject()
 //            var mMeetingList = ArrayList<MeetingModel>()
 //
-//            var jsonMeetingList = ApiService.GetEventList(params[0],params[1],activity!!.showlanguage)
+//            var jsonMeetingList = ApiService.GetEventList(params[0],params[1],activity!!.showLanguage)
 //
 //            var resultCode:Int = jsonMeetingList.get("responseCode") as Int
 //            var resultMessage:String = jsonMeetingList.get("responseMessage") as String
@@ -254,7 +244,7 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
 //                    if(result.size == 0){
 //                        Log.d(activity?.tag,"No Meetings!")
 //                        var desc = ""
-//                        if(activity!!.showlanguage == "fr"){
+//                        if(activity!!.showLanguage == "fr"){
 //                            desc = "Aucune réunion trouvée!"
 //                        }else{
 //                            desc = "No meetings found!"

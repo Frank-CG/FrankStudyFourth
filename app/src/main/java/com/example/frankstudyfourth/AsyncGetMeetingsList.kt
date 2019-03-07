@@ -30,7 +30,7 @@ class AsyncGetMeetingsList(private var activity: MainActivity) : AsyncTask<Strin
         var jsonResult = JSONObject()
         var mMeetingList = ArrayList<MeetingModel>()
 
-        var jsonMeetingList = ApiService.GetEventList(params[0],params[1], activity.showlanguage)
+        var jsonMeetingList = ApiService.GetEventList(params[0],params[1], activity.showLanguage)
 
         var resultCode:Int = jsonMeetingList.get("responseCode") as Int
         var resultMessage:String = jsonMeetingList.get("responseMessage") as String
@@ -92,7 +92,7 @@ class AsyncGetMeetingsList(private var activity: MainActivity) : AsyncTask<Strin
                     flag = false
                     Log.d(activity.tag,"No Meetings!")
                     var desc = ""
-                    if(activity.showlanguage == "fr"){
+                    if(activity.showLanguage == "fr"){
                         desc = "Aucune réunion trouvée!"
                     }else{
                         desc = "No meetings found!"
