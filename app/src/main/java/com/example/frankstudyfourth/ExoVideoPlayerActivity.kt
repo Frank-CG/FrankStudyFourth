@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
 import android.provider.AlarmClock
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
@@ -25,89 +26,150 @@ import com.google.android.exoplayer2.util.Util
 import java.util.*
 import com.google.android.exoplayer2.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES
 import com.google.android.exoplayer2.source.hls.DefaultHlsExtractorFactory
+import com.google.android.exoplayer2.ui.PlaybackControlView
 import kotlinx.android.synthetic.main.activity_video_player.*
 import java.text.SimpleDateFormat
-import java.time.Duration
 
 
-class VideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
+class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
+
+    private val TAG = "ExoVideoPlayerActivity"
 
     companion object {
         private const val KEY_PLAY_WHEN_READY = "play_when_ready"
         private const val KEY_WINDOW = "window"
         private const val KEY_POSITION = "position"
+        private const val STATE_PLAYER_FULLSCREEN = "playerFullscreen"
     }
-
-    private val TAG = "VideoPlayerActivity"
-    private var player: SimpleExoPlayer? = null
-    private val playerView: PlayerView by lazy { findViewById<PlayerView>(R.id.player_view) }
-    private val audioOnlyView: TextView by lazy { findViewById<TextView>(R.id.audioOnly) }
-
-    private var shouldAutoPlay: Boolean = true
-    private var trackSelector: DefaultTrackSelector? = null
-    private var lastSeenTrackGroupArray: TrackGroupArray? = null
-    private lateinit var mediaDataSourceFactory: DataSource.Factory
-    private val bandwidthMeter: BandwidthMeter = DefaultBandwidthMeter()
 
     private var playWhenReady: Boolean = false
     private var currentWindow: Int = 0
     private var playbackPosition: Long = 0
+
+
+    private var player: SimpleExoPlayer? = null
+    private val playerView: PlayerView by lazy { findViewById<PlayerView>(R.id.exoplayer) }
+
+    private val audioOnlyView: TextView by lazy { findViewById<TextView>(R.id.audioOnly) }
     private val progressBar: ProgressBar by lazy { findViewById<ProgressBar>(R.id.progress_bar) }
-    private val ivHideControllerButton: ImageView by lazy { findViewById<ImageView>(R.id.exo_controller) }
+//    private val ivHideControllerButton: ImageView by lazy { findViewById<ImageView>(R.id.exo_controller) }
     private val ivSettings: ImageView by lazy { findViewById<ImageView>(R.id.settings) }
     private val ivSubtitle: ImageView by lazy { findViewById<ImageView>(R.id.subtitles)}
 
-    private var audioOnly:Boolean = false
+    private lateinit var mFullScreenIcon: ImageView
+    private lateinit var mFullScreenButton: FrameLayout
+    private var mExoPlayerFullscreen = false
+    private lateinit var mFullScreenDialog:Dialog
 
-
-    private lateinit var mediaUrlStr: String
-        //"http://annie.sliq.local/hls/live2/playlist.m3u8"
-        //"https://parlvulive.azureedge.net/HOC230-DUO-5/WB_Chamber/VL/EN/Playlist.m3u8?DVR"
-        //"http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-
-    private lateinit var meetingModel: MeetingModel
-
-
+    private var audioOnlyUserChoice:Boolean = false
+    private var shouldAutoPlay: Boolean = true
+    private var trackSelector: DefaultTrackSelector? = null
+    private var lastSeenTrackGroupArray: TrackGroupArray? = null
+    private val bandwidthMeter: BandwidthMeter = DefaultBandwidthMeter()
+    private lateinit var mediaDataSourceFactory: DataSource.Factory
     private lateinit var defaultHlsExtractorFactory: DefaultHlsExtractorFactory
-
+    private lateinit var mediaUrlStr: String
+    private lateinit var meetingModel: MeetingModel
     private lateinit var language: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_video_player)
+        setContentView(R.layout.activity_exovideoplayer)
 
         if (savedInstanceState != null) {
             with(savedInstanceState) {
                 playWhenReady = getBoolean(KEY_PLAY_WHEN_READY)
                 currentWindow = getInt(KEY_WINDOW)
                 playbackPosition = getLong(KEY_POSITION)
+                mExoPlayerFullscreen = getBoolean(STATE_PLAYER_FULLSCREEN)
             }
         }
 
         meetingModel = intent.getParcelableExtra<MeetingModel>(AlarmClock.EXTRA_MESSAGE)
-        var meetingId = meetingModel.id
-        Log.d(TAG, "MeetingId=$meetingId")
-
+        audioOnlyUserChoice = meetingModel.audioOnly
         language = Locale.getDefault().isO3Language.substring(0,2)
         if(language != "en" && language != "fr"){
             language = "fl"
         }
-        audioOnly = meetingModel.audioOnly
         mediaUrlStr = getUrl(language,meetingModel)
-
-        initMeetingInfo()
 
         shouldAutoPlay = true
         mediaDataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, "mediaPlayerSample"),
-                bandwidthMeter as TransferListener)
+            bandwidthMeter as TransferListener)
 
         defaultHlsExtractorFactory = DefaultHlsExtractorFactory(FLAG_ALLOW_NON_IDR_KEYFRAMES)
+
+        mFullScreenIcon = findViewById(R.id.exo_fullscreen_icon)
+        mFullScreenButton = findViewById(R.id.exo_fullscreen_button)
+
+        initMeetingInfo()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        updateStartPosition()
+        with(outState) {
+            putBoolean(KEY_PLAY_WHEN_READY, playWhenReady)
+            putInt(KEY_WINDOW, currentWindow)
+            putLong(KEY_POSITION, playbackPosition)
+            putBoolean(STATE_PLAYER_FULLSCREEN,mExoPlayerFullscreen)
+        }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onBackPressed(){
         releasePlayer()
-        Log.d("onBackPressed","releasePlayer")
         super.onBackPressed()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Util.SDK_INT > 23) initializePlayer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Util.SDK_INT <= 23 || player == null) initializePlayer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (Util.SDK_INT <= 23) releasePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Util.SDK_INT > 23) releasePlayer()
+    }
+
+    override fun onClick(v: View) {
+        if(v.id == R.id.settings){
+            settingOnClick()
+        }
+        if (v.id == R.id.subtitles) {
+            subtitleOnClick()
+        }
+        if (v.id == R.id.exo_fullscreen_button){
+            fullScreenButtonOnClick()
+        }
+        Log.d(TAG, v.id.toString())
+    }
+
+    private fun releasePlayer() {
+        if (player != null) {
+            updateStartPosition()
+            shouldAutoPlay = player!!.playWhenReady
+            player!!.release()
+            player = null
+            trackSelector = null
+        }
+    }
+
+    private fun updateStartPosition() {
+        with(player!!) {
+            playbackPosition = currentPosition
+            currentWindow = currentWindowIndex
+            playWhenReady = playWhenReady
+        }
     }
 
     private fun initMeetingInfo(){
@@ -170,7 +232,7 @@ class VideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun getUrl(lang: String, meeting: MeetingModel): String {
         var rst = ""
-        var audioOnly = audioOnly.toString().toLowerCase()
+        var audioOnly = audioOnlyUserChoice.toString().toLowerCase()
         var streams = meeting.streams
         if(streams.size > 0){
             for(i in 0..(streams.size-1)){
@@ -183,43 +245,160 @@ class VideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
         return rst
     }
 
-    public override fun onStart() {
-        super.onStart()
-        if (Util.SDK_INT > 23) initializePlayer()
+    private fun settingOnClick(){
+        Log.d("VideoPlayerActivity.onClick","settings")
+        val ft = supportFragmentManager.beginTransaction()
+        val prev = supportFragmentManager.findFragmentByTag("dialog")
+        if (prev != null) {
+            ft.remove(prev!!)
+        }
+        ft.addToBackStack(null)
+
+        // Create and show the dialog.
+        val dialogFragment = SettingDialogView()
+        dialogFragment.setAudioOnly(meetingModel.audioOnly)
+        dialogFragment.setLanguage(language)
+        dialogFragment.show(ft, "dialog")
     }
 
-    public override fun onResume() {
-        super.onResume()
-        if (Util.SDK_INT <= 23 || player == null) initializePlayer()
-    }
+    private fun subtitleOnClick(){
+        val mappedTrackInfo = trackSelector?.currentMappedTrackInfo
 
-    public override fun onPause() {
-        super.onPause()
-        if (Util.SDK_INT <= 23) releasePlayer()
-    }
+        if (mappedTrackInfo != null) {
 
-    public override fun onStop() {
-        super.onStop()
-        if (Util.SDK_INT > 23) {
-            Log.d("onStop","releasePlayer")
-            releasePlayer()
+            Log.d("VideoPlayerActivity.Track","[rendererCount="+mappedTrackInfo.rendererCount.toString()+"]")
+            for(i in 0 until mappedTrackInfo.rendererCount){
+                var logMsg = ""
+                logMsg += "[rendererTrackGroups ["+i+"] Length="+mappedTrackInfo.getTrackGroups(i).length+"]\n"
+                var trackGroups = mappedTrackInfo.getTrackGroups(i)
+                for(j in 0 until trackGroups.length){
+                    logMsg += "\t[TrackGroups[$j]:\n"
+                    var trackGroupLength = trackGroups.get(j).length
+                    for(k in 0 until trackGroupLength){
+                        var trackFormat = trackGroups.get(j).getFormat(k)
+                        logMsg += "\t\t[TrackFormat[$k]:"+Format.toLogString(trackFormat)
+                    }
+                }
+                Log.d("VideoPlayerActivity.Track",logMsg)
+            }
+
+            val title = getString(R.string.caption)
+            val rendererIndex = ivSubtitle.tag as Int
+            Log.d("VideoPlayerActivity.Track", "rendererIndex=$rendererIndex")
+            val dialogPair = TrackSelectionView.getDialog(this, title, trackSelector, 2)
+            dialogPair.second.setShowDisableOption(false)
+            dialogPair.second.setAllowAdaptiveSelections(true)
+            dialogPair.first.show()
         }
     }
 
-    public fun reInitializePlayer(curPage:Int, curSelection: Int){
-        Log.d("VideoPlayerActivity","reInitializePlayer")
-        var langArr = arrayOf("auto","en","fr","fl")
-        this.audioOnly = curPage == 0
-        this.mediaUrlStr = getUrl(langArr[curSelection],meetingModel)
-        updateStartPosition();
-//        onStop();
-//        initializePlayer();
+    private fun fullScreenButtonOnClick(){
+        if (!mExoPlayerFullscreen)
+            openFullscreenDialog()
+        else
+            closeFullscreenDialog()
+    }
 
-        if(audioOnly){
+    private fun initializePlayer() {
+        val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
+        trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
+        lastSeenTrackGroupArray = null
+
+        if(audioOnlyUserChoice){
             audioOnlyView.visibility = View.VISIBLE
-//            playerView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+            mFullScreenButton.visibility = View.INVISIBLE
         }else{
             audioOnlyView.visibility = View.INVISIBLE
+            mFullScreenButton.visibility = View.VISIBLE
+        }
+
+        player = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
+        playerView.requestFocus()
+        playerView.player = player
+
+        with(player!!) {
+            addListener(PlayerEventListener())
+            playWhenReady = shouldAutoPlay
+        }
+
+        val mediaSource = HlsMediaSource.Factory(mediaDataSourceFactory)
+            .createMediaSource(Uri.parse(mediaUrlStr))
+
+        val haveStartPosition = currentWindow != C.INDEX_UNSET
+        if (haveStartPosition) {
+            player!!.seekTo(currentWindow, playbackPosition)
+        }
+        player!!.prepare(mediaSource, !haveStartPosition, false)
+        updateButtonVisibilities()
+        ivSettings.setOnClickListener(this)
+        ivSubtitle.setOnClickListener(this)
+        mFullScreenButton.setOnClickListener(this)
+        initFullscreenDialog()
+    }
+
+    private fun updateButtonVisibilities() {
+        ivSubtitle.visibility = View.GONE
+        if (player == null) {
+            return
+        }
+        val mappedTrackInfo = trackSelector!!.currentMappedTrackInfo ?: return
+
+        for (i in 0 until mappedTrackInfo.rendererCount) {
+            val trackGroups = mappedTrackInfo.getTrackGroups(i)
+            if (trackGroups.length != 0) {
+                if (player!!.getRendererType(i) == C.TRACK_TYPE_VIDEO) {
+                    ivSubtitle.visibility = View.VISIBLE
+                    ivSubtitle.tag = i
+                }
+            }
+        }
+    }
+
+    private fun initFullscreenDialog() {
+        mFullScreenDialog = object : Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+            override fun onBackPressed() {
+                if (mExoPlayerFullscreen)
+                    closeFullscreenDialog()
+                super.onBackPressed()
+            }
+        }
+    }
+
+    private fun openFullscreenDialog() {
+        (playerView.parent as ViewGroup).removeView(playerView)
+        mFullScreenDialog.addContentView(
+            playerView,
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        )
+        mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(this@ExoVideoPlayerActivity, R.drawable.ic_fullscreen_skrink))
+        mExoPlayerFullscreen = true
+        mFullScreenDialog.show()
+    }
+
+    private fun closeFullscreenDialog() {
+        (playerView.parent as ViewGroup).removeView(playerView)
+        (findViewById<View>(R.id.main_media_frame) as FrameLayout).addView(playerView)
+        mExoPlayerFullscreen = false
+        mFullScreenDialog.dismiss()
+        mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(this@ExoVideoPlayerActivity, R.drawable.ic_fullscreen_expand))
+    }
+
+    fun reInitializePlayer(curPage:Int, curSelection: Int){
+        Log.d(TAG,"reInitializePlayer")
+        var langArr = arrayOf("auto","en","fr","fl")
+        this.audioOnlyUserChoice = curPage == 0
+        this.mediaUrlStr = getUrl(langArr[curSelection],meetingModel)
+        updateStartPosition();
+
+        if(audioOnlyUserChoice){
+            audioOnlyView.visibility = View.VISIBLE
+            mFullScreenButton.visibility = View.INVISIBLE
+            if(mExoPlayerFullscreen){
+                closeFullscreenDialog()
+            }
+        }else{
+            audioOnlyView.visibility = View.INVISIBLE
+            mFullScreenButton.visibility = View.VISIBLE
         }
 
         val mediaSource = HlsMediaSource.Factory(mediaDataSourceFactory)
@@ -231,156 +410,7 @@ class VideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
         }
 
         player!!.prepare(mediaSource, !haveStartPosition, false)
-
     }
-
-    override fun onClick(v: View) {
-
-        if(v.id == R.id.settings){
-
-            Log.d("VideoPlayerActivity.onClick","settings")
-            val ft = supportFragmentManager.beginTransaction()
-            val prev = supportFragmentManager.findFragmentByTag("dialog")
-            if (prev != null) {
-                ft.remove(prev!!)
-            }
-            ft.addToBackStack(null)
-
-            // Create and show the dialog.
-            val dialogFragment = SettingDialogView()
-            dialogFragment.setAudioOnly(meetingModel.audioOnly)
-            dialogFragment.setLanguage(language)
-            dialogFragment.show(ft, "dialog")
-        }
-
-        if (v.id == R.id.subtitles) {
-
-            val mappedTrackInfo = trackSelector?.currentMappedTrackInfo
-
-            if (mappedTrackInfo != null) {
-
-                Log.d("VideoPlayerActivity.Track","[rendererCount="+mappedTrackInfo.rendererCount.toString()+"]")
-                for(i in 0 until mappedTrackInfo.rendererCount){
-                    var logMsg = ""
-                    logMsg += "[rendererTrackGroups ["+i+"] Length="+mappedTrackInfo.getTrackGroups(i).length+"]\n"
-                    var trackGroups = mappedTrackInfo.getTrackGroups(i)
-                    for(j in 0 until trackGroups.length){
-                        logMsg += "\t[TrackGroups[$j]:\n"
-                        var trackGroupLength = trackGroups.get(j).length
-                        for(k in 0 until trackGroupLength){
-                            var trackFormat = trackGroups.get(j).getFormat(k)
-                            logMsg += "\t\t[TrackFormat[$k]:"+Format.toLogString(trackFormat)
-                        }
-                    }
-                    Log.d("VideoPlayerActivity.Track",logMsg)
-                }
-
-                val title = getString(R.string.caption)
-                val rendererIndex = ivSubtitle.tag as Int
-                Log.d("VideoPlayerActivity.Track", "rendererIndex=$rendererIndex")
-                val dialogPair = TrackSelectionView.getDialog(this, title, trackSelector, 2)
-                dialogPair.second.setShowDisableOption(false)
-                dialogPair.second.setAllowAdaptiveSelections(true)
-                dialogPair.first.show()
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        updateStartPosition()
-
-        with(outState) {
-            putBoolean(KEY_PLAY_WHEN_READY, playWhenReady)
-            putInt(KEY_WINDOW, currentWindow)
-            putLong(KEY_POSITION, playbackPosition)
-        }
-
-        super.onSaveInstanceState(outState)
-    }
-
-
-    private fun initializePlayer() {
-
-        playerView.requestFocus()
-
-        val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-
-        trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
-        lastSeenTrackGroupArray = null
-
-        player = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
-
-        playerView.player = player
-
-        with(player!!) {
-            addListener(PlayerEventListener())
-            playWhenReady = shouldAutoPlay
-        }
-
-        // Use Hls, Dash or other smooth streaming media source if you want to test the track quality selection.
-        /*val mediaSource: MediaSource = HlsMediaSource(Uri.parse("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"),
-                mediaDataSourceFactory, mainHandler, null)*/
-
-        if(audioOnly){
-            audioOnlyView.visibility = View.VISIBLE
-        }else{
-            audioOnlyView.visibility = View.INVISIBLE
-        }
-        val mediaSource = HlsMediaSource.Factory(mediaDataSourceFactory)
-                .createMediaSource(Uri.parse(mediaUrlStr))
-
-        val haveStartPosition = currentWindow != C.INDEX_UNSET
-        if (haveStartPosition) {
-            player!!.seekTo(currentWindow, playbackPosition)
-        }
-
-        player!!.prepare(mediaSource, !haveStartPosition, false)
-        updateButtonVisibilities()
-
-        ivHideControllerButton.setOnClickListener { playerView.hideController() }
-    }
-
-    private fun releasePlayer() {
-        if (player != null) {
-            updateStartPosition()
-            shouldAutoPlay = player!!.playWhenReady
-            player!!.release()
-            player = null
-            trackSelector = null
-        }
-    }
-
-    private fun updateStartPosition() {
-
-        with(player!!) {
-            playbackPosition = currentPosition
-            currentWindow = currentWindowIndex
-            playWhenReady = playWhenReady
-        }
-    }
-
-    private fun updateButtonVisibilities() {
-
-        ivSubtitle.visibility = View.GONE
-        if (player == null) {
-            return
-        }
-        ivSettings.setOnClickListener(this)
-
-        val mappedTrackInfo = trackSelector!!.currentMappedTrackInfo ?: return
-
-        for (i in 0 until mappedTrackInfo.rendererCount) {
-            val trackGroups = mappedTrackInfo.getTrackGroups(i)
-            if (trackGroups.length != 0) {
-                if (player!!.getRendererType(i) == C.TRACK_TYPE_VIDEO) {
-                    ivSubtitle.visibility = View.VISIBLE
-                    ivSubtitle.setOnClickListener(this)
-                    ivSubtitle.tag = i
-                }
-            }
-        }
-    }
-
 
     private inner class PlayerEventListener : Player.DefaultEventListener() {
 
@@ -405,7 +435,7 @@ class VideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
                 val mappedTrackInfo = trackSelector!!.currentMappedTrackInfo
                 if (mappedTrackInfo != null) {
                     if (mappedTrackInfo.getTypeSupport(C.TRACK_TYPE_VIDEO) == MappedTrackInfo.RENDERER_SUPPORT_UNSUPPORTED_TRACKS) {
-                        Toast.makeText(this@VideoPlayerActivity, "Error unsupported track", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ExoVideoPlayerActivity, "Error unsupported track", Toast.LENGTH_SHORT).show()
                     }
                 }
                 lastSeenTrackGroupArray = trackGroups

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+	<FrameLayout
+			android:id="@+id/main_media_frame"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="0.4"
+			android:background="#000000">
+
+		<com.google.android.exoplayer2.ui.PlayerView
+				android:id="@+id/exoplayer"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center">
+			<ProgressBar
+					android:id="@+id/progress_bar"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:visibility="gone"/>
+		</com.google.android.exoplayer2.ui.PlayerView>
+
+		<TextView
+				android:text="@string/audio_only"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:id="@+id/audioOnly" android:gravity="center"
+				android:layout_gravity="center" android:visibility="invisible" android:textSize="48sp"
+				android:textColor="@color/colorWhite" android:textStyle="bold"
+				android:background="@android:color/transparent"
+		/>
+
+	</FrameLayout>
+
+
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	             android:layout_width="match_parent"
+	             android:layout_height="0dp"
+	             android:layout_weight="0.5"
+	             android:id="@+id/meetingInfo" android:layout_marginTop="16dp">
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:layout_marginBottom="8dp">
+			<TextView android:text="@string/info_title"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingTitle"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_location"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingLocation"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_description"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingDescription"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_scheduled"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingScheduled"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+		<TableRow android:layout_width="match_parent" android:layout_height="match_parent"
+		          android:layout_marginBottom="8dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+			<TextView android:text="@string/info_actual"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="8dp"
+			          android:layout_marginStart="8dp"/>
+
+			<TextView android:id="@+id/meetingActual"
+			          android:layout_width="wrap_content"
+			          android:layout_height="match_parent" android:layout_marginLeft="32dp"
+			          android:layout_marginStart="32dp" android:layout_marginRight="16dp"
+			          android:layout_marginEnd="16dp" android:layout_weight="1"/>
+		</TableRow>
+
+	</TableLayout>
+</LinearLayout>

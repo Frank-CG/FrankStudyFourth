@@ -111,7 +111,7 @@ class TimeLineAdapter(private val mFeedList: List<MeetingModel>,private val acti
                 if(ApiService.checkWifiOnAndConnected(activity)){
                     if(timeLineModel.entityStatus.toInt() != -999){
                         if(timeLineModel.streams.size > 0){
-                            var intent = Intent(holder.timeline.context, VideoPlayerActivity::class.java).apply {
+                            var intent = Intent(holder.timeline.context, ExoVideoPlayerActivity::class.java).apply {
                                 putExtra(EXTRA_MESSAGE, timeLineModel)
                             }
                             holder.timeline.context.startActivity(intent)
@@ -127,7 +127,7 @@ class TimeLineAdapter(private val mFeedList: List<MeetingModel>,private val acti
                                 dialog.dismiss()
                                 if(timeLineModel.entityStatus.toInt() != -999){
                                     if(timeLineModel.streams.size > 0){
-                                        var intent = Intent(holder.timeline.context, VideoPlayerActivity::class.java).apply {
+                                        var intent = Intent(holder.timeline.context, ExoVideoPlayerActivity::class.java).apply {
                                             putExtra(EXTRA_MESSAGE, timeLineModel)
                                         }
                                         holder.timeline.context.startActivity(intent)

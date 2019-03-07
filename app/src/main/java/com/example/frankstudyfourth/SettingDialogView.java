@@ -174,7 +174,7 @@ public class SettingDialogView extends DialogFragment {
             SettingDialogFragment page = (SettingDialogFragment) adapter.getItem(curPage);
             int curSelection = page.getCurrentSelection();
             Log.d("SettingDialogView", String.valueOf(curSelection));
-            VideoPlayerActivity activity = (VideoPlayerActivity) getActivity();
+            ExoVideoPlayerActivity activity = (ExoVideoPlayerActivity) getActivity();
             activity.reInitializePlayer(curPage,curSelection);
             this.getDialog().dismiss();
         });

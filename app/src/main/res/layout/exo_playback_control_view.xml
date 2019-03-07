@@ -44,18 +44,20 @@
                 android:layout_marginEnd="20dp"
                 android:src="@drawable/ic_settings" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:src="@drawable/ic_hide"
-            android:id="@+id/exo_controller"
-            android:layout_height="24dp" />
+        <ImageButton android:id="@id/exo_rew"
+                     style="@style/ExoMediaButton.Rewind"/>
+
+        <ImageButton android:id="@id/exo_repeat_toggle"
+                     style="@style/ExoMediaButton"/>
 
         <ImageButton android:id="@id/exo_play"
-            style="@style/ExoMediaButton.Play"/>
+                     style="@style/ExoMediaButton.Play"/>
 
         <ImageButton android:id="@id/exo_pause"
-            style="@style/ExoMediaButton.Pause"/>
+                     style="@style/ExoMediaButton.Pause"/>
 
+        <ImageButton android:id="@id/exo_ffwd"
+                     style="@style/ExoMediaButton.FastForward"/>
 
     </LinearLayout>
 
@@ -91,6 +93,23 @@
             android:paddingRight="4dp"
             android:includeFontPadding="false"
             android:textColor="#FFBEBEBE"/>
+
+        <FrameLayout
+                android:id="@+id/exo_fullscreen_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="right">
+
+            <ImageView
+                    android:id="@+id/exo_fullscreen_icon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_fullscreen_expand"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 
