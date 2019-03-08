@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
         selectedDate = Calendar.getInstance()
         mTitle.text = SimpleDateFormat("yyyy-MM-dd").format(selectedDate.time)
 
+
+
         showLanguage = Locale.getDefault().isO3Language.substring(0,2)
         if(showLanguage != "en" && showLanguage != "fr"){
             showLanguage = "en"
@@ -67,6 +69,7 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
         picker = DatePickerDialog(this@MainActivity,
             DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                 println(dayOfMonth.toString() + "/" + (monthOfYear + 1) + "/" + year)
+                picker.getButton(DatePickerDialog.BUTTON_POSITIVE).visibility = View.GONE;
             },
             year,
             month,
@@ -97,6 +100,10 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
             })
         picker.hide()
 
+        mTitle.setOnClickListener(View.OnClickListener { v: View? ->
+            picker.show()
+        })
+
         if(ApiService.isNetworkAvailable(this)){
             setDataListItems()
         }else{
@@ -110,7 +117,6 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
         println("Default Language:"+ Locale.getDefault().isO3Language)
 
         prepareSwipeRefreshLayout()
-
     }
 
     private fun prepareSwipeRefreshLayout() {
@@ -120,7 +126,6 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
     override fun onRefresh() {
         networkRetry(mSwipeRefreshLayout)
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.appbar_menu, menu)
@@ -144,16 +149,7 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
         var taskGetMeetingsList = AsyncGetMeetingsList(this@MainActivity).execute(formatter.format(startDate.time),formatter.format(startDate.time))
     }
 
-    private fun initRecyclerView() {
-        mLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        recyclerView.layoutManager = mLayoutManager
-        mAdapter = TimeLineAdapter(mDataList,this)
-        recyclerView.adapter = mAdapter
-        //var el = ApiService.GetEventList("20190210", "20190211")
-        //Log.d("MainActivity",el.toString());
-    }
-
-    fun networkRetry(v: View){
+    private fun networkRetry(v: View){
         mSwipeRefreshLayout.isRefreshing = false
         if(ApiService.isNetworkAvailable(this)){
             setDataListItems()
@@ -165,125 +161,12 @@ class MainActivity : AppCompatActivity(),SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-//    @SuppressLint("StaticFieldLeak")
-//    class AsyncTaskExample(private var activity: MainActivity?) : AsyncTask<String, String, JSONObject>() {
-//
-//        override fun onPreExecute() {
-//            super.onPreExecute()
-//            var mDataList = ArrayList<MeetingModel>()
-//            var mLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-//            activity?.recyclerView?.layoutManager = mLayoutManager
-//            var mAdapter = TimeLineAdapter(mDataList)
-//            activity?.recyclerView?.adapter = mAdapter
-//            activity!!.mInternetErrTv.visibility = View.GONE
-//            activity!!.mNetworkLoseTv.visibility = View.GONE
-//            activity!!.mProgressBar.visibility = View.VISIBLE
-//        }
-//
-//        override fun doInBackground(vararg params: String?): JSONObject {
-//            var jsonResult = JSONObject()
-//            var mMeetingList = ArrayList<MeetingModel>()
-//
-//            var jsonMeetingList = ApiService.GetEventList(params[0],params[1],activity!!.showLanguage)
-//
-//            var resultCode:Int = jsonMeetingList.get("responseCode") as Int
-//            var resultMessage:String = jsonMeetingList.get("responseMessage") as String
-//            jsonResult.put("resultCode",resultCode)
-//            jsonResult.put("resultMessage",resultMessage)
-//
-//            if(resultCode == 200){
-//                var jsonMeetingArray = jsonMeetingList?.getJSONArray("ContentEntityDatas")
-//
-//                if(jsonMeetingArray!!.length() > 0){
-//                    for (i in 0..(jsonMeetingArray.length() -1)){
-//                        var jsonMeeting = jsonMeetingArray.getJSONObject(i)
-//
-//                        mMeetingList.add(
-//                            MeetingModel(jsonMeeting.getString("Title"),
-//                                jsonMeeting.getString("IconUri"),
-//                                jsonMeeting.getString("EntityStatus"),
-//                                jsonMeeting.getString("EntityStatusDesc"),
-//                                jsonMeeting.getString("Location"),
-//                                jsonMeeting.getString("Description"),
-//                                jsonMeeting.getString("ThumbnailUri"),
-//                                jsonMeeting.getString("ScheduledStart"),
-//                                jsonMeeting.getString("ScheduledEnd"),
-//                                jsonMeeting.getString("HasArchiveStream"),
-//                                jsonMeeting.getString("ActualStart"),
-//                                jsonMeeting.getString("ActualEnd"),
-//                                jsonMeeting.getString("LastModifiedTime"),
-//                                jsonMeeting.getString("CommitteeId"),
-//                                jsonMeeting.getString("VenueId"),
-//                                jsonMeeting.getString("AssemblyProgress"),
-//                                jsonMeeting.getString("AssemblyStatus"),
-//                                jsonMeeting.getString("ForeignKey"),
-//                                jsonMeeting.getString("Id"),
-//                                jsonMeeting.getString("Tag"),
-//                                ArrayList<MeetingStreamModel>(),
-//                                false
-//                            )
-//                        )
-//                    }
-//                }
-//            }
-//            jsonResult.put("jsonMeeting",mMeetingList)
-//            return jsonResult
-//        }
-//
-//        override fun onPostExecute(jsonResult: JSONObject?) {
-//            super.onPostExecute(jsonResult)
-//            var rstCode:Int = jsonResult!!.get("resultCode") as Int
-//            println("rstCode=$rstCode")
-//            activity!!.mProgressBar.visibility = View.INVISIBLE
-//            if(rstCode == 200){
-//                var result:ArrayList<MeetingModel> = jsonResult!!.get("jsonMeeting") as ArrayList<MeetingModel>
-//
-//                if (result == null) {
-//                    Log.d(activity?.tag,"Network Error!")
-//                } else {
-//                    if(result.size == 0){
-//                        Log.d(activity?.tag,"No Meetings!")
-//                        var desc = ""
-//                        if(activity!!.showLanguage == "fr"){
-//                            desc = "Aucune réunion trouvée!"
-//                        }else{
-//                            desc = "No meetings found!"
-//                        }
-//                        result.add(MeetingModel(
-//                            desc,
-//                            "",
-//                            "-999",
-//                            desc,
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            "",
-//                            ArrayList(),
-//                            false
-//                        ))
-//                    }
-//                    var mLayoutManager:LinearLayoutManager = LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
-//                    activity?.recyclerView?.layoutManager = mLayoutManager
-//                    var mAdapter = TimeLineAdapter(result)
-//                    activity?.recyclerView?.adapter = mAdapter
-//                }
-//            } else if(rstCode == -1){
-//                activity!!.mInternetErrTv.visibility = View.VISIBLE
-//            } else {
-//                activity!!.mInternetErrTv.visibility = View.VISIBLE
-//            }
-//        }
+
+
+//    private fun initRecyclerView() {
+//        mLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+//        recyclerView.layoutManager = mLayoutManager
+//        mAdapter = TimeLineAdapter(mDataList,this)
+//        recyclerView.adapter = mAdapter
 //    }
 }

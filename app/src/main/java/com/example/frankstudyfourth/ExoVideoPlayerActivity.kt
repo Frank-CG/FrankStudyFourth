@@ -1,6 +1,9 @@
 package com.example.frankstudyfourth
 
 import android.app.Dialog
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.AlarmClock
@@ -56,6 +59,7 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     private val ivSettings: ImageView by lazy { findViewById<ImageView>(R.id.settings) }
     private val ivSubtitle: ImageView by lazy { findViewById<ImageView>(R.id.subtitles)}
 
+
     private lateinit var mFullScreenIcon: ImageView
     private lateinit var mFullScreenButton: FrameLayout
     private var mExoPlayerFullscreen = false
@@ -71,6 +75,10 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var mediaUrlStr: String
     private lateinit var meetingModel: MeetingModel
     private lateinit var language: String
+
+    private lateinit var mMeetingInfoView: TableLayout
+
+    private var enableOrientation:Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,6 +122,22 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
             putBoolean(STATE_PLAYER_FULLSCREEN,mExoPlayerFullscreen)
         }
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        var orientation= newConfig.orientation
+        Log.d("ExoVideoPlayerActivity","orientation=$orientation, enableOrientation=$enableOrientation")
+        super.onConfigurationChanged(newConfig)
+        setMeetingInfoViewVisibility(false)
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (!mExoPlayerFullscreen) {
+                openFullscreenDialog()
+            }
+        } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (mExoPlayerFullscreen) {
+                closeFullscreenDialog()
+            }
+        }
     }
 
     override fun onBackPressed(){
@@ -173,6 +197,7 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun initMeetingInfo(){
+        mMeetingInfoView = findViewById(R.id.meetingInfo)
         meetingTitle.text = meetingModel.title
         meetingLocation.text = meetingModel.location
         meetingDescription.text = meetingModel.description
@@ -314,6 +339,7 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
 
         player = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
         playerView.requestFocus()
+        playerView.controllerHideOnTouch = true
         playerView.player = player
 
         with(player!!) {
@@ -355,7 +381,7 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun initFullscreenDialog() {
-        mFullScreenDialog = object : Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+        mFullScreenDialog = object : FullScreenDialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
             override fun onBackPressed() {
                 if (mExoPlayerFullscreen)
                     closeFullscreenDialog()
@@ -365,6 +391,7 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun openFullscreenDialog() {
+        setMeetingInfoViewVisibility(true)
         (playerView.parent as ViewGroup).removeView(playerView)
         mFullScreenDialog.addContentView(
             playerView,
@@ -376,11 +403,25 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     }
 
     private fun closeFullscreenDialog() {
+        setMeetingInfoViewVisibility(false)
         (playerView.parent as ViewGroup).removeView(playerView)
         (findViewById<View>(R.id.main_media_frame) as FrameLayout).addView(playerView)
         mExoPlayerFullscreen = false
         mFullScreenDialog.dismiss()
         mFullScreenIcon.setImageDrawable(ContextCompat.getDrawable(this@ExoVideoPlayerActivity, R.drawable.ic_fullscreen_expand))
+    }
+
+    private fun setMeetingInfoViewVisibility(forceHide: Boolean){
+        if(forceHide){
+            mMeetingInfoView.visibility = View.GONE
+        }else{
+            val orientation = this.resources.configuration.orientation
+            if(orientation == Configuration.ORIENTATION_PORTRAIT){
+                mMeetingInfoView.visibility = View.VISIBLE
+            }else{
+                mMeetingInfoView.visibility = View.GONE
+            }
+        }
     }
 
     fun reInitializePlayer(curPage:Int, curSelection: Int){

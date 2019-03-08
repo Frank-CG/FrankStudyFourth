@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ExoVideoPlayerActivity" android:launchMode="singleTop">
+        <activity android:name=".ExoVideoPlayerActivity" android:launchMode="singleTop" android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="com.google.android.exoplayer.demo.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
