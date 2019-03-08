@@ -57,7 +57,7 @@ class ExoVideoPlayerActivity : AppCompatActivity(), View.OnClickListener{
     private val progressBar: ProgressBar by lazy { findViewById<ProgressBar>(R.id.progress_bar) }
 //    private val ivHideControllerButton: ImageView by lazy { findViewById<ImageView>(R.id.exo_controller) }
     private val ivSettings: ImageView by lazy { findViewById<ImageView>(R.id.settings) }
-    private val ivSubtitle: ImageView by lazy { findViewById<ImageView>(R.id.subtitles)}
+    private val ivSubtitle: TextView by lazy { findViewById<TextView>(R.id.subtitles)}
 
 
     private lateinit var mFullScreenIcon: ImageView
